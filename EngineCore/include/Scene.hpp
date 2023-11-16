@@ -15,6 +15,7 @@ namespace Engine
     private:
     protected:
         std::unordered_map<std::string, Object*> objects{};
+        std::unordered_map<std::string, Object*> templates{};
     public:
 		Engine* owner_engine;
 
@@ -24,6 +25,7 @@ namespace Engine
 		const std::unordered_map<std::string, Object*>* const GetAllObjects() noexcept;
 
 		void AddObject(std::string name, Object* ptr);
+		Object* AddTemplatedObject(std::string name, std::string template_name);
 		Object* FindObject(std::string name);
 		size_t RemoveObject(std::string name) noexcept;
     };

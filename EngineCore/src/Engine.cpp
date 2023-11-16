@@ -306,34 +306,18 @@ namespace Engine
 	int Engine::FireEvent(EventHandling::Event& event)
 	{
 		int sum = 0;
-		auto handler_range = this->event_handlers.equal_range(event.event_type); 
-		// for (auto handler : this->event_handlers)
-		// {
-		// 	if (handler.first == event.event_type)
-		// 	{
-		// 		sum += handler.second(event);
-		// 	}
-		// }
 
+		auto handler_range = this->event_handlers.equal_range(event.event_type); 
 		for(auto handler = handler_range.first; handler != handler_range.second; ++handler)
 		{
 			sum += handler->second(event);
 		}
 
 		auto lua_handler_range = this->lua_event_handlers.equal_range(event.event_type); 
-
 		for(auto handler = lua_handler_range.first; handler != lua_handler_range.second; ++handler)
 		{
 			sum += this->script_executor->CallIntoScript(Scripting::ExecuteType::EventHandler, handler->second.first, handler->second.second, &event);
 		}
-
-		// for (auto handler : this->lua_event_handlers)
-		// {
-		// 	if (std::get<0>(handler) == event.event_type)
-		// 	{
-		// 		sum += this->script_executor->CallIntoScript(Scripting::ExecuteType::EventHandler, std::get<1>(handler), std::get<2>(handler), &event);
-		// 	}
-		// }
 		return sum;
 	}
 
@@ -387,7 +371,6 @@ namespace Engine
 		);
 #endif
 
-		//this->window = new Rendering::Window(this->windowTitle, this->windowX, this->windowY);
 		this->script_executor = new Scripting::LuaScriptExecutor();
 		this->script_executor->UpdateHeldLogger(this->logger);
 
@@ -396,7 +379,6 @@ namespace Engine
 		this->asset_manager->owner_engine = this;
 		this->asset_manager->logger = this->logger;
 		this->asset_manager->lua_executor = this->script_executor;
-		//this->asset_manager->UpdateEngine(this);
 
 		this->scene_manager = std::make_shared<SceneManager>(this->logger);
 		this->scene_manager->owner_engine = this;
@@ -456,13 +438,11 @@ namespace Engine
 	void Engine::RegisterEventHandler(EventHandling::EventType event_type, std::function<int(EventHandling::Event&)> function)
 	{
 		this->event_handlers.emplace(event_type, function);
-		//this->event_handlers.push_back(std::make_pair(event_type, function));
 		
 	}
 
 	void Engine::RegisterLuaEventHandler(EventHandling::EventType event_type, std::shared_ptr<Scripting::LuaScript> script, std::string function)
 	{
 		this->lua_event_handlers.emplace(event_type, std::make_pair(script, function));
-		//this->lua_event_handlers.push_back(std::make_tuple(event_type, script, function));
 	}
 }

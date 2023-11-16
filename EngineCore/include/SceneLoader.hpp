@@ -2,20 +2,18 @@
 
 #include "Scene.hpp"
 #include "Logging/Logging.hpp"
+#include "InternalEngineObject.hpp"
 
 #include <memory>
 
 namespace Engine
 {
-    class SceneLoader
+    class SceneLoader : public InternalEngineObject
     {
     protected:
         void LoadSceneInternal(std::shared_ptr<Scene>& scene, std::string scene_name);
 
     public:
-		std::shared_ptr<Logging::Logger> logger;
-		Engine* owner_engine;
-
         std::string scene_prefix;
 
         SceneLoader(std::shared_ptr<Logging::Logger> logger);

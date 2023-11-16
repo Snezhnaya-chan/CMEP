@@ -31,7 +31,7 @@ namespace Engine
 		catch(std::exception& e)
 		{
 			this->logger->SimpleLog(Logging::LogLevel::Exception, "Error parsing scene.json '%s', what: %s", std::string(this->scene_prefix + "/" + scene_name + "/scene.json").c_str(), e.what());
-			exit(1);
+			throw std::runtime_error("Error parsing scene.json");
 		}
 
 		std::string prefix_scene = this->scene_prefix + std::string("/") + scene_name + std::string("/");

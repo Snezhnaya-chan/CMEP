@@ -18,6 +18,18 @@ namespace Engine
 		return &(this->objects);
 	}
 	
+	Object* Scene::AddTemplatedObject(std::string name, std::string template_name)
+	{
+		auto templated_object = this->templates.find(template_name);
+
+		if(templated_object != this->templates.end())
+		{
+			this->AddObject(name, templated_object->second);
+			return templated_object->second;
+		}
+		return nullptr;
+	}
+
 	void Scene::AddObject(std::string name, Object* ptr)
 	{
 		this->logger->SimpleLog(Logging::LogLevel::Info, "Adding object \"%s\" to managed scene", name.c_str());
