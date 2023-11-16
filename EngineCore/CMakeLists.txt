@@ -50,9 +50,9 @@ add_library(EngineCore SHARED ${SRC_FILES})
 
 target_link_directories(EngineCore PUBLIC lib ../build/Debug ../build)
 if((WIN32 OR UNIX) AND NOT APPLE)
-target_link_directories(EngineCore PUBLIC ../external/lua-prebuilt)
+	target_link_directories(EngineCore PUBLIC ../external/lua-prebuilt)
 else()
-target_link_directories(EngineCore PUBLIC ../external/lua-5.4.6/src)
+	target_link_directories(EngineCore PUBLIC ../external/lua-5.4.6/src)
 endif()
 
 target_include_directories(EngineCore PUBLIC include ../external ../external/VulkanMemoryAllocator/include ../external/lua-prebuilt/include ../common_include)
