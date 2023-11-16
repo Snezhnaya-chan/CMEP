@@ -75,10 +75,8 @@ namespace Engine
         std::shared_ptr<Logging::Logger> logger{};
 
 		// Event handler storage
-		//std::vector<std::pair<EventHandling::EventType, std::function<int(EventHandling::Event&)>>> event_handlers;
 		std::multimap<EventHandling::EventType, std::function<int(EventHandling::Event&)>> event_handlers;
 		std::multimap<EventHandling::EventType, std::pair<std::shared_ptr<Scripting::LuaScript>, std::string>> lua_event_handlers;
-		//std::vector<std::tuple<EventHandling::EventType, std::shared_ptr<Scripting::LuaScript>, std::string>> lua_event_handlers;
 		
 		static void spinSleep(double seconds);
 
