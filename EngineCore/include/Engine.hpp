@@ -112,6 +112,8 @@ namespace Engine
 		inline void UnregisterAllLuaEventHandlers() {  this->lua_event_handlers.clear(); }
 		void RegisterLuaEventHandler(EventHandling::EventType event_type, std::shared_ptr<Scripting::LuaScript> script, std::string function);
 		
+		void Stop();
+
 		int FireEvent(EventHandling::Event& event);
 
 		double GetLastDeltaTime();

@@ -33,7 +33,7 @@ add_subdirectory(rungame)
 add_dependencies(rungame glfw)
 
 if(NOT MSVC)
-	add_custom_target(lua_build COMMAND ./external/build_lua.sh macosx)
+	add_custom_target(lua_build COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/external/build_lua.sh macosx)
 	add_dependencies(EngineCore lua_build)
 	add_dependencies(rungame lua_build)
 endif()
