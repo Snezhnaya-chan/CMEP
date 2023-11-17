@@ -41,8 +41,6 @@ namespace Engine
 
         AssetManager* asset_manager = this->owner_engine->GetAssetManager();
 
-        this->owner_engine->UnregisterAllLuaEventHandlers();
-
 		for(auto& eventHandler : data["eventHandlers"])
 		{
 			if(eventHandler["type"] == std::string("onInit"))
@@ -77,7 +75,7 @@ namespace Engine
 				event_handler = asset_manager->GetLuaScript(prefix_scene + std::string(eventHandler["file"]));
 			}
 			
-			this->owner_engine->RegisterLuaEventHandler(eventType, event_handler, eventHandler["function"]);
+			scene->lua_event_handlers.emplace(eventType, std::make_pair(event_handler, eventHandler["function"]));
 		}
     }
 

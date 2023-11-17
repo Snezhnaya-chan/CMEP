@@ -3,6 +3,10 @@
 #include "Object.hpp"
 #include "InternalEngineObject.hpp"
 #include "PlatformSemantics.hpp"
+#include "EventHandling.hpp"
+#include "Scripting/LuaScript.hpp"
+
+#include <map>
 
 #include <unordered_map>
 
@@ -16,8 +20,9 @@ namespace Engine
     protected:
         std::unordered_map<std::string, Object*> objects{};
         std::unordered_map<std::string, Object*> templates{};
+
     public:
-		Engine* owner_engine;
+		std::multimap<EventHandling::EventType, std::pair<std::shared_ptr<Scripting::LuaScript>, std::string>> lua_event_handlers;
 
         Scene();
         ~Scene();

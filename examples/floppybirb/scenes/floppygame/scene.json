@@ -5,5 +5,11 @@
         { "type": "onKeyDown", "file": "scripts/eventHandlers.lua", "function": "onKeyDown" },
         { "type": "onKeyUp", "file": "scripts/eventHandlers.lua", "function": "onKeyUp" },
         { "type": "onMouseMoved", "file": "scripts/eventHandlers.lua", "function": "onMouseMoved" }
+    ],
+    "templates": [
+        {
+            "name": "birb",
+            "type": "sprite"
+        }
     ]
 }

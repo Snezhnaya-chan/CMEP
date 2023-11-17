@@ -76,7 +76,6 @@ namespace Engine
 
 		// Event handler storage
 		std::multimap<EventHandling::EventType, std::function<int(EventHandling::Event&)>> event_handlers;
-		std::multimap<EventHandling::EventType, std::pair<std::shared_ptr<Scripting::LuaScript>, std::string>> lua_event_handlers;
 		
 		static void spinSleep(double seconds);
 
@@ -107,8 +106,6 @@ namespace Engine
 
 		void ConfigFile(std::string path);
 		void RegisterEventHandler(EventHandling::EventType event_type, std::function<int(EventHandling::Event&)> function);
-		inline void UnregisterAllLuaEventHandlers() {  this->lua_event_handlers.clear(); }
-		void RegisterLuaEventHandler(EventHandling::EventType event_type, std::shared_ptr<Scripting::LuaScript> script, std::string function);
 		
 		int FireEvent(EventHandling::Event& event);
 

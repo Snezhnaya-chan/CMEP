@@ -15,13 +15,13 @@ add_subdirectory(external/glfw)
 include_directories(external/glm)
 
 if(MSVC)
-    add_compile_options(/std:c++17 /MP /wd4996 /wd4251)
+    add_compile_options(/std:c++17 /MP /wd4996 /wd4251 /Od)
 else()
 	add_compile_definitions("DEBUG=$<CONFIG:Debug>")
-	add_compile_options(-std=c++17)
+	add_compile_options(-std=c++17 -g3)
 	add_link_options(-lpthread)
 	if(NOT APPLE)
-		add_compile_options(--coverage -g3)
+		add_compile_options(--coverage)
 		add_link_options(--coverage -lgcov)
 	endif()
 endif()
@@ -34,9 +34,11 @@ add_dependencies(rungame glfw)
 
 if(NOT MSVC)
 	add_custom_target(lua_build COMMAND ./external/build_lua.sh macosx)
-	add_dependencies(EngineCore lua_build)
-	add_dependencies(rungame lua_build)
+else()
+	add_custom_target(lua_build COMMAND xcopy /s /e /i /y "external\\lua-prebuilt\\lua54.dll" "build" WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
+add_dependencies(EngineCore lua_build)
+add_dependencies(rungame lua_build)
 
 set(TESTS_TO_RUN
 	vulkan_init_cleanup
@@ -57,9 +59,6 @@ foreach(test_to_run ${TESTS_TO_RUN})
 endforeach()
 
 add_subdirectory(examples)
-
-file(COPY external/lua-prebuilt/lua54.dll DESTINATION build)
-
 
 #if(NOT APPLE)
 #	file(COPY external/lua-prebuilt/liblua54.so DESTINATION build)

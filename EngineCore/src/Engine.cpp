@@ -105,47 +105,8 @@ namespace Engine
 
 		EventHandling::EventType eventType = EventHandling::EventType::EVENT_UNDEFINED;
 
-		std::string prefix_scene = this->config.lookup.scenes + std::string("/") + this->config.defaultScene + std::string("/");
-		this->logger->SimpleLog(Logging::LogLevel::Info, "Loading scene prefix is: %s", prefix_scene.c_str());
-
-		// for(auto& eventHandler : data["eventHandlers"])
-		// {
-		// 	if(eventHandler["type"] == std::string("onInit"))
-		// 	{
-		// 		eventType = EventHandling::EventType::ON_INIT;
-		// 	}
-		// 	else if(eventHandler["type"] == std::string("onMouseMoved"))
-		// 	{
-		// 		eventType = EventHandling::EventType::ON_MOUSEMOVED;
-		// 	}
-		// 	else if(eventHandler["type"] == std::string("onKeyDown"))
-		// 	{
-		// 		eventType = EventHandling::EventType::ON_KEYDOWN;
-		// 	}
-		// 	else if(eventHandler["type"] == std::string("onKeyUp"))
-		// 	{
-		// 		eventType = EventHandling::EventType::ON_KEYUP;
-		// 	}
-		// 	else if(eventHandler["type"] == std::string("onUpdate"))
-		// 	{
-		// 		eventType = EventHandling::EventType::ON_UPDATE;
-		// 	}
-
-		// 	assert(eventType != EventHandling::EventType::EVENT_UNDEFINED);
-
-		// 	this->logger->SimpleLog(Logging::LogLevel::Debug3, "Event handler for type: %s", static_cast<std::string>(eventHandler["type"]).c_str());
-		// 	std::shared_ptr<Scripting::LuaScript> event_handler = this->asset_manager->GetLuaScript(prefix_scene + std::string(eventHandler["file"]));
-			
-		// 	if(event_handler == nullptr)
-		// 	{
-		// 		this->asset_manager->AddLuaScript(prefix_scene + std::string(eventHandler["file"]), prefix_scene + std::string(eventHandler["file"]));
-		// 		event_handler = this->asset_manager->GetLuaScript(prefix_scene + std::string(eventHandler["file"]));
-		// 	}
-			
-		// 	this->RegisterLuaEventHandler(eventType, event_handler, eventHandler["function"]);
-		// }
-
 		this->scene_manager->LoadScene(this->config.defaultScene);
+		this->scene_manager->SetScene(this->config.defaultScene);
 
 		std::string setting;
 		setting = "window.title";
@@ -153,23 +114,6 @@ namespace Engine
 
 		setting = "window.size";
 		this->windowX = data[setting]["x"]; this->windowY = data[setting]["y"];
-	}
-
-	void Engine::RenderCallback(VkCommandBuffer commandBuffer, uint32_t currentFrame, Engine* engine)
-	{
-		
-		for (auto& [name, ptr] : *(engine->scene_manager->GetAllObjects()))
-		{
-			try
-			{
-				ptr->renderer->Render(commandBuffer, currentFrame);
-			}
-			catch (const std::exception& e)
-			{
-				ptr->renderer->logger->SimpleLog(Logging::LogLevel::Exception, "Caught exception while rendering object %s: %s", name.c_str(), e.what());
-				exit(1);
-			}
-		}
 	}
 
 	void Engine::ErrorCallback(int code, const char* message)
@@ -236,6 +180,23 @@ namespace Engine
 			event.deltaTime = renderer->owner_engine->GetLastDeltaTime();
 			event.raisedFrom = renderer->owner_engine;
 			renderer->owner_engine->FireEvent(event);
+		}
+	}
+
+	void Engine::RenderCallback(VkCommandBuffer commandBuffer, uint32_t currentFrame, Engine* engine)
+	{
+		
+		for (auto& [name, ptr] : *(engine->scene_manager->GetAllObjects()))
+		{
+			try
+			{
+				ptr->renderer->Render(commandBuffer, currentFrame);
+			}
+			catch (const std::exception& e)
+			{
+				ptr->renderer->logger->SimpleLog(Logging::LogLevel::Exception, "Caught exception while rendering object %s: %s", name.c_str(), e.what());
+				exit(1);
+			}
 		}
 	}
 
@@ -313,7 +274,7 @@ namespace Engine
 			sum += handler->second(event);
 		}
 
-		auto lua_handler_range = this->lua_event_handlers.equal_range(event.event_type); 
+		auto lua_handler_range = this->scene_manager->GetSceneCurrent()->lua_event_handlers.equal_range(event.event_type);
 		for(auto handler = lua_handler_range.first; handler != lua_handler_range.second; ++handler)
 		{
 			sum += this->script_executor->CallIntoScript(Scripting::ExecuteType::EventHandler, handler->second.first, handler->second.second, &event);
@@ -439,10 +400,5 @@ namespace Engine
 	{
 		this->event_handlers.emplace(event_type, function);
 		
-	}
-
-	void Engine::RegisterLuaEventHandler(EventHandling::EventType event_type, std::shared_ptr<Scripting::LuaScript> script, std::string function)
-	{
-		this->lua_event_handlers.emplace(event_type, std::make_pair(script, function));
 	}
 }

@@ -47,6 +47,11 @@ namespace Engine
 		this->current_scene = scene_name;
 	}
 
+	std::shared_ptr<Scene> SceneManager::GetSceneCurrent()
+	{
+		return this->scenes.at(this->current_scene);
+	}
+
 	const std::unordered_map<std::string, Object*>* const SceneManager::GetAllObjects() noexcept
 	{
 		return this->scenes.at(this->current_scene)->GetAllObjects();

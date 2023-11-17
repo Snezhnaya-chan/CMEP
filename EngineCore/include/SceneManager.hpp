@@ -41,6 +41,7 @@ namespace Engine
 		void SetSceneLoadPrefix(std::string scene_prefix);
 		void LoadScene(std::string scene_name);
 		void SetScene(std::string scene_name);
+		std::shared_ptr<Scene> GetSceneCurrent();
 
 		const std::unordered_map<std::string, Object*>* const GetAllObjects() noexcept;
 
