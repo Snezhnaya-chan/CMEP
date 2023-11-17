@@ -107,6 +107,8 @@ namespace Engine
 		void ConfigFile(std::string path);
 		void RegisterEventHandler(EventHandling::EventType event_type, std::function<int(EventHandling::Event&)> function);
 		
+		void Stop();
+
 		int FireEvent(EventHandling::Event& event);
 
 		double GetLastDeltaTime();

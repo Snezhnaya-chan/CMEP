@@ -391,6 +391,11 @@ namespace Engine
 		this->engineLoop();
 	}
 
+	void Engine::Stop()
+	{
+		glfwSetWindowShouldClose(this->rendering_engine->GetWindow().window, GLFW_TRUE);
+	}
+
 	void Engine::ConfigFile(std::string path)
 	{
 		this->config_path = std::move(path);
