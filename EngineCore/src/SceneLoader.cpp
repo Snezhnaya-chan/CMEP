@@ -2,6 +2,10 @@
 #include "EventHandling.hpp"
 #include "AssetManager.hpp"
 #include "Engine.hpp"
+#include "Rendering/AxisRenderer.hpp"
+#include "Rendering/MeshRenderer.hpp"
+#include "Rendering/TextRenderer.hpp"
+#include "Rendering/SpriteRenderer.hpp"
 
 #include "nlohmann-json/single_include/nlohmann/json.hpp"
 
@@ -37,45 +41,65 @@ namespace Engine
 		std::string prefix_scene = this->scene_prefix + std::string("/") + scene_name + std::string("/");
 		this->logger->SimpleLog(Logging::LogLevel::Info, "Loading scene prefix is: %s", prefix_scene.c_str());
 
-		EventHandling::EventType eventType = EventHandling::EventType::EVENT_UNDEFINED;
+		EventHandling::EventType event_type = EventHandling::EventType::EVENT_UNDEFINED;
 
         AssetManager* asset_manager = this->owner_engine->GetAssetManager();
 
-		for(auto& eventHandler : data["eventHandlers"])
+		// Load scene event handlers
+		for(auto& event_handler_entry : data["eventHandlers"])
 		{
-			if(eventHandler["type"] == std::string("onInit"))
+			if(event_handler_entry["type"] == std::string("onInit"))
 			{
-				eventType = EventHandling::EventType::ON_INIT;
+				event_type = EventHandling::EventType::ON_INIT;
 			}
-			else if(eventHandler["type"] == std::string("onMouseMoved"))
+			else if(event_handler_entry["type"] == std::string("onMouseMoved"))
 			{
-				eventType = EventHandling::EventType::ON_MOUSEMOVED;
+				event_type = EventHandling::EventType::ON_MOUSEMOVED;
 			}
-			else if(eventHandler["type"] == std::string("onKeyDown"))
+			else if(event_handler_entry["type"] == std::string("onKeyDown"))
 			{
-				eventType = EventHandling::EventType::ON_KEYDOWN;
+				event_type = EventHandling::EventType::ON_KEYDOWN;
 			}
-			else if(eventHandler["type"] == std::string("onKeyUp"))
+			else if(event_handler_entry["type"] == std::string("onKeyUp"))
 			{
-				eventType = EventHandling::EventType::ON_KEYUP;
+				event_type = EventHandling::EventType::ON_KEYUP;
 			}
-			else if(eventHandler["type"] == std::string("onUpdate"))
+			else if(event_handler_entry["type"] == std::string("onUpdate"))
 			{
-				eventType = EventHandling::EventType::ON_UPDATE;
+				event_type = EventHandling::EventType::ON_UPDATE;
 			}
 
-			assert(eventType != EventHandling::EventType::EVENT_UNDEFINED);
+			assert(event_type != EventHandling::EventType::EVENT_UNDEFINED);
 
-			this->logger->SimpleLog(Logging::LogLevel::Debug3, "Event handler for type: %s", static_cast<std::string>(eventHandler["type"]).c_str());
-			std::shared_ptr<Scripting::LuaScript> event_handler = asset_manager->GetLuaScript(prefix_scene + std::string(eventHandler["file"]));
+			this->logger->SimpleLog(Logging::LogLevel::Debug3, "Event handler for type: %s", static_cast<std::string>(event_handler_entry["type"]).c_str());
+			std::shared_ptr<Scripting::LuaScript> event_handler = asset_manager->GetLuaScript(prefix_scene + std::string(event_handler_entry["file"]));
 			
 			if(event_handler == nullptr)
 			{
-				asset_manager->AddLuaScript(prefix_scene + std::string(eventHandler["file"]), prefix_scene + std::string(eventHandler["file"]));
-				event_handler = asset_manager->GetLuaScript(prefix_scene + std::string(eventHandler["file"]));
+				asset_manager->AddLuaScript(prefix_scene + std::string(event_handler_entry["file"]), prefix_scene + std::string(event_handler_entry["file"]));
+				event_handler = asset_manager->GetLuaScript(prefix_scene + std::string(event_handler_entry["file"]));
 			}
 			
-			scene->lua_event_handlers.emplace(eventType, std::make_pair(event_handler, eventHandler["function"]));
+			scene->lua_event_handlers.emplace(event_type, std::make_pair(event_handler, event_handler_entry["function"]));
+		}
+
+		
+
+		// Load scene object templates
+		for(auto& template_entry : data["templates"])
+		{
+			Object* object = new Object();
+
+			if(template_entry["renderer"]["type"] == std::string("sprite"))
+			{
+				object->renderer = new Rendering::SpriteRenderer(this->owner_engine);
+				object->ScreenSizeInform(this->owner_engine->GetRenderingEngine()->GetWindow().windowX, this->owner_engine->GetRenderingEngine()->GetWindow().windowY);
+				((Rendering::SpriteRenderer*)object->renderer)->UpdateMesh();
+				((Rendering::SpriteRenderer*)object->renderer)->UpdateTexture(asset_manager->GetTexture(template_entry["renderer"]["sprite"]));
+				((Rendering::SpriteRenderer*)object->renderer)->scene_manager = this->owner_engine->GetSceneManager();
+			}
+
+			scene->LoadTemplatedObject(template_entry["name"], object);
 		}
     }
 

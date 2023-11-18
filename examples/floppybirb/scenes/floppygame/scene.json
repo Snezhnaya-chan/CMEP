@@ -9,7 +9,10 @@
     "templates": [
         {
             "name": "birb",
-            "type": "sprite"
+            "renderer": {
+                "type": "sprite",
+                "sprite": "textures/birb.png"
+            }
         }
     ]
 }
