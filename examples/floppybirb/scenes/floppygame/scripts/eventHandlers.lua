@@ -10,6 +10,7 @@ birbIsVelociting = true;
 onKeyDown = function(event)
 	-- check for esc
 	if event.keycode == 256 then
+		cmepapi.engine_Stop(event.raisedFrom);
 	end
 
 	-- check for space press
