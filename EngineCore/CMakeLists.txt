@@ -49,9 +49,9 @@ endif()
 add_library(EngineCore SHARED ${SRC_FILES})
 
 target_link_directories(EngineCore PUBLIC lib ../build/Debug ../build)
-if((WIN32 OR UNIX) AND NOT APPLE)
+if(WIN32)
 	target_link_directories(EngineCore PUBLIC ../external/lua-prebuilt)
-else()
+elseif(UNIX OR APLE)
 	target_link_directories(EngineCore PUBLIC ../external/lua-5.4.6/src)
 endif()
 
