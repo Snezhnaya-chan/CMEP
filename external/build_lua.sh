@@ -23,5 +23,5 @@ cd ${LUA_OUTPUT_FOLDER}
 echo "Success"
 
 echo "Begin build lua version ${LUA_VERSION}"
-make $1
+${MAKE} $1
 echo "Success"
