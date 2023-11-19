@@ -11,6 +11,12 @@ namespace Engine
 			delete ptr;
 		}
 		this->objects.clear();
+		
+		for (auto& [name, ptr] : this->templates)
+		{
+			delete ptr;
+		}
+		this->templates.clear();
     }
 
     const std::unordered_map<std::string, Object*>* const Scene::GetAllObjects() noexcept
@@ -64,5 +70,17 @@ namespace Engine
 		}
 
 		return this->objects.erase(name);
+	}
+
+	void Scene::LoadTemplatedObject(std::string name, Object* ptr)
+	{
+		if (ptr != nullptr)
+		{
+			Rendering::GLFWwindowData data = this->owner_engine->GetRenderingEngine()->GetWindow();
+			ptr->ScreenSizeInform(data.windowX, data.windowY);
+			ptr->UpdateHeldLogger(this->logger);
+			ptr->renderer->UpdateHeldLogger(this->logger);
+			this->templates.emplace(name, ptr);
+		}
 	}
 }

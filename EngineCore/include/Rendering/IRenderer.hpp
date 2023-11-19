@@ -16,9 +16,9 @@ namespace Engine
 	{
 		class Shader;
 
-		/// <summary>
-		/// Interface describing Renderer API for renderables.
-		/// </summary>
+		/**
+		 * @brief Interface for Renderers
+		 */
 		class CMEP_EXPORT IRenderer : public InternalEngineObject
 		{
 		protected:
@@ -33,6 +33,7 @@ namespace Engine
 			uint_fast16_t _screenx = 0, _screeny = 0;
 
 			bool has_updated_mesh = false;
+
 
 		public:
 			std::weak_ptr<::Engine::SceneManager> scene_manager{};

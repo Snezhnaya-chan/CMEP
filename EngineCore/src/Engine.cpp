@@ -294,6 +294,8 @@ namespace Engine
 
 	Engine::~Engine() noexcept
 	{
+		this->logger->SimpleLog(Logging::LogLevel::Info, "Deleting engine");
+
 		delete this->asset_manager;
 
 		delete this->script_executor;

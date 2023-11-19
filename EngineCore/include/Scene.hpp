@@ -34,6 +34,6 @@ namespace Engine
 		Object* FindObject(std::string name);
 		size_t RemoveObject(std::string name) noexcept;
 
-        inline void LoadTemplatedObject(std::string name, Object* object) { this->templates.emplace(name, object); }
+        void LoadTemplatedObject(std::string name, Object* ptr);
     };
 }

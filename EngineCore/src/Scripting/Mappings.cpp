@@ -271,6 +271,15 @@ namespace Engine::Scripting::Mappings
 			return 0;
 		}
 
+		int engine_Stop(lua_State* state)
+		{
+			Engine* engine = *(Engine**)lua_touserdata(state, 1);
+
+			engine->Stop();
+			
+			return 0;
+		}
+
 #pragma endregion
 
 #pragma region TextRenderer
@@ -631,6 +640,7 @@ namespace Engine::Scripting::Mappings
 		CMEP_LUAMAPPING_DEFINE(engine_GetAssetManager),
 		CMEP_LUAMAPPING_DEFINE(engine_SetFramerateTarget),
 		CMEP_LUAMAPPING_DEFINE(engine_GetSceneManager),
+		CMEP_LUAMAPPING_DEFINE(engine_Stop),
 
 		CMEP_LUAMAPPING_DEFINE(textRenderer_UpdateText),
 
@@ -651,72 +661,4 @@ namespace Engine::Scripting::Mappings
 		CMEP_LUAMAPPING_DEFINE(objectFactory_CreateTextObject),
 		CMEP_LUAMAPPING_DEFINE(objectFactory_CreateGeneric3DObject)
 	};
-
-	// const char* nameMappings[] = {
-	// 	"gsm_GetCameraHVRotation",
-	// 	"gsm_SetCameraHVRotation",
-	// 	"gsm_GetCameraTransform",
-	// 	"gsm_SetCameraTransform",
-	// 	"gsm_GetLightTransform",
-	// 	"gsm_SetLightTransform",
-	// 	"gsm_AddObject",
-	// 	"gsm_FindObject",
-	// 	"gsm_RemoveObject",
-
-	// 	"engine_GetAssetManager",
-	// 	"engine_SetFramerateTarget",
-
-	// 	"textRenderer_UpdateText",
-
-	// 	"meshRenderer_UpdateTexture",
-
-	// 	"object_AddChild",
-	// 	"object_GetRotation",
-	// 	"object_Rotate",
-	// 	"object_GetPosition",
-	// 	"object_Translate",
-
-	// 	"assetManager_GetFont",
-	// 	"assetManager_GetTexture",
-	// 	"assetManager_AddTexture",
-	// 	"assetManager_GetModel",
-
-	// 	"objectFactory_CreateSpriteObject",
-	// 	"objectFactory_CreateTextObject",
-	// 	"objectFactory_CreateGeneric3DObject"
-	// };
-
-	// lua_CFunction functionMappings[] = {
-	// 	Functions::gsm_GetCameraHVRotation,
-	// 	Functions::gsm_SetCameraHVRotation,
-	// 	Functions::gsm_GetCameraTransform,
-	// 	Functions::gsm_SetCameraTransform,
-	// 	Functions::gsm_GetLightTransform,
-	// 	Functions::gsm_SetLightTransform,
-	// 	Functions::gsm_AddObject,
-	// 	Functions::gsm_FindObject,
-	// 	Functions::gsm_RemoveObject,
-
-	// 	Functions::engine_GetAssetManager,
-	// 	Functions::engine_SetFramerateTarget,
-
-	// 	Functions::textRenderer_UpdateText,
-
-	// 	Functions::meshRenderer_UpdateTexture,
-
-	// 	Functions::object_AddChild,
-	// 	Functions::object_GetRotation,
-	// 	Functions::object_Rotate,
-	// 	Functions::object_GetPosition,
-	// 	Functions::object_Translate,
-
-	// 	Functions::assetManager_GetFont,
-	// 	Functions::assetManager_GetTexture,
-	// 	Functions::assetManager_AddTexture,
-	// 	Functions::assetManager_GetModel,
-
-	// 	Functions::objectFactory_CreateSpriteObject,
-	// 	Functions::objectFactory_CreateTextObject,
-	// 	Functions::objectFactory_CreateGeneric3DObject
-	// };
 }

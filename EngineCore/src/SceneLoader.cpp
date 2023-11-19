@@ -83,22 +83,19 @@ namespace Engine
 			scene->lua_event_handlers.emplace(event_type, std::make_pair(event_handler, event_handler_entry["function"]));
 		}
 
-		
-
 		// Load scene object templates
 		for(auto& template_entry : data["templates"])
 		{
 			Object* object = new Object();
 
+			Rendering::GLFWwindowData window_data = this->owner_engine->GetRenderingEngine()->GetWindow();
 			if(template_entry["renderer"]["type"] == std::string("sprite"))
 			{
 				object->renderer = new Rendering::SpriteRenderer(this->owner_engine);
-				object->ScreenSizeInform(this->owner_engine->GetRenderingEngine()->GetWindow().windowX, this->owner_engine->GetRenderingEngine()->GetWindow().windowY);
-				((Rendering::SpriteRenderer*)object->renderer)->UpdateMesh();
 				((Rendering::SpriteRenderer*)object->renderer)->UpdateTexture(asset_manager->GetTexture(template_entry["renderer"]["sprite"]));
 				((Rendering::SpriteRenderer*)object->renderer)->scene_manager = this->owner_engine->GetSceneManager();
 			}
-
+			this->logger->SimpleLog(Logging::LogLevel::Debug2, "Loaded templated object %s", std::string(template_entry["name"]).c_str());
 			scene->LoadTemplatedObject(template_entry["name"], object);
 		}
     }
@@ -107,6 +104,7 @@ namespace Engine
     {
         std::shared_ptr<Scene> new_scene = std::make_shared<Scene>();
         new_scene->logger = this->logger;
+		new_scene->owner_engine = this->owner_engine;
 
         this->LoadSceneInternal(new_scene, scene_name);
 
