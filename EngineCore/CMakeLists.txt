@@ -42,16 +42,16 @@ else()
 	set(STATIC_LIBRARIES
 		vulkan
 		glfw
-		lua
+		lua54
 		)
 endif()
 
 add_library(EngineCore SHARED ${SRC_FILES})
 
 target_link_directories(EngineCore PUBLIC lib ../build/Debug ../build)
-if(WIN32)
+if((WIN32 OR UNIX) AND NOT APPLE)
 	target_link_directories(EngineCore PUBLIC ../external/lua-prebuilt)
-elseif(UNIX OR APLE)
+elseif(APPLE)
 	target_link_directories(EngineCore PUBLIC ../external/lua-5.4.6/src)
 endif()
 

@@ -23,7 +23,7 @@ elseif(APPLE)
 else()
 	set(STATIC_LIBRARIES
 		glfw
-		lua
+		lua54
 		)
 endif()
 
@@ -36,10 +36,10 @@ if(DEFINED ENV{VULKAN_SDK})
 		target_include_directories(rungame PUBLIC $ENV{VULKAN_SDK}/Include)
 	else()
 		if(APPLE)
-				target_link_directories(rungame PUBLIC $ENV{VULKAN_SDK}/lib lib ../build/Debug ../build ../external/lua-5.4.6/src)
+			target_link_directories(rungame PUBLIC $ENV{VULKAN_SDK}/lib lib ../build/Debug ../build ../external/lua-5.4.6/src)
 			target_include_directories(rungame PUBLIC $ENV{VULKAN_SDK}/include)
 		else()
-			target_link_directories(rungame PUBLIC $ENV{VULKAN_SDK}/lib lib ../build/Debug ../build ../external/lua-5.4.6/src)
+			target_link_directories(rungame PUBLIC $ENV{VULKAN_SDK}/lib lib ../build/Debug ../build ../external/lua-prebuilt)
 			target_include_directories(rungame PUBLIC $ENV{VULKAN_SDK}/include)
 		endif()
 	endif()
