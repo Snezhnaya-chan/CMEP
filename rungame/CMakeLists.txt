@@ -23,7 +23,7 @@ elseif(APPLE)
 else()
 	set(STATIC_LIBRARIES
 		glfw
-		lua54
+		lua
 		)
 endif()
 
