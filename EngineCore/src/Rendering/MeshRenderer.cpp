@@ -41,8 +41,11 @@ namespace Engine::Rendering
 		VulkanRenderingEngine* renderer = this->owner_engine->GetRenderingEngine();
 
 		vkDeviceWaitIdle(renderer->GetLogicalDevice());
-
-		renderer->cleanupVulkanBuffer(this->vbo);
+		
+		if(this->vbo != nullptr)
+		{
+			renderer->cleanupVulkanBuffer(this->vbo);
+		}
 		renderer->cleanupVulkanPipeline(this->pipeline);
 	}
 

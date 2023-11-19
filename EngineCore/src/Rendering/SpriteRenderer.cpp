@@ -41,10 +41,12 @@ namespace Engine::Rendering
 		VulkanRenderingEngine* renderer = this->owner_engine->GetRenderingEngine();
 
 		vkDeviceWaitIdle(renderer->GetLogicalDevice());
-		renderer->cleanupVulkanBuffer(this->vbo);
+		
+		if(this->vbo != nullptr)
+		{
+			renderer->cleanupVulkanBuffer(this->vbo);
+		}
 		renderer->cleanupVulkanPipeline(this->pipeline);
-		//glDeleteVertexArrays(1, &this->vao);
-		//glDeleteBuffers(1, &this->vbo);
 	}
 
 	void SpriteRenderer::Update(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation, uint_fast16_t screenx, uint_fast16_t screeny, glm::vec3 parent_position, glm::vec3 parent_rotation, glm::vec3 parent_size)
@@ -78,17 +80,6 @@ namespace Engine::Rendering
 
 		if (this->vbo == nullptr)
 		{
-			//vkDeviceWaitIdle(renderer->GetLogicalDevice());
-			//renderer->cleanupVulkanBuffer(this->vbo);
-			//this->vbo = nullptr;
-		
-			const float xs = 1.0f;//(float)this->_size.x * 2.0f;
-			const float ys = 1.0f;//(float)this->_size.y * 2.0f;
-			//const float x = (float)this->_pos.x * 2.0f - 1.0f;
-			//const float y = (float)this->_pos.y * 2.0f - 1.0f;
-	
-			const float x = 0.f, y = 0.f;
-	
 			std::array<RenderingVertex, 6> vertices = {};
 			vertices[0] = { glm::vec3(0.0, 1.0, 0.0), glm::vec3(1.f, 0.f, 0.f), glm::vec2(0.0, 1.0) };
 			vertices[1] = { glm::vec3(1.0, 1.0, 0.0), glm::vec3(1.f, 0.f, 0.f), glm::vec2(1.0, 1.0) };
@@ -163,7 +154,6 @@ namespace Engine::Rendering
 
 			vkUpdateDescriptorSets(renderer->GetLogicalDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 		}
-		//glNamedBufferData(this->vbo, sizeof(data), (void*)data, GL_STATIC_DRAW);
 	}
 
 	void SpriteRenderer::Render(VkCommandBuffer commandBuffer, uint32_t currentFrame)
@@ -192,37 +182,5 @@ namespace Engine::Rendering
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
 		vkCmdDraw(commandBuffer, 6, 1, 0, 0);
-
-		/*
-		if (!(this->texture || this->program))
-		{
-			throw std::exception("No texture/program assigned to SpriteRenderer, cannot perform Engine::Rendering::SpriteRenderer::Render()");
-		}
-
-		GLuint texture = this->texture.get()->GetTexture();
-		GLuint shader = this->program.get()->GetProgram();
-		assert(texture != 0);
-		assert(shader != 0);
-
-		glBindVertexArray(this->vao);
-		glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
-
-		glUseProgram(shader);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, texture);
-
-		// Vertex and texture coord data
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)nullptr);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(GLfloat)));
-
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-
-		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
-		*/
 	}
 }

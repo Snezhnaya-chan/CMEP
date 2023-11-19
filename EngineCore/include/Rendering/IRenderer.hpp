@@ -33,8 +33,6 @@ namespace Engine
 			uint_fast16_t _screenx = 0, _screeny = 0;
 
 			bool has_updated_mesh = false;
-
-
 		public:
 			std::weak_ptr<::Engine::SceneManager> scene_manager{};
 
