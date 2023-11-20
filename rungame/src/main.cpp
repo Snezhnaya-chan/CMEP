@@ -26,14 +26,6 @@ void runEngine()
 {
 	Engine::Engine* engine = nullptr;
 
-	Engine::EngineConfig config{};
-	config.window.sizeX = 1100;
-	config.window.sizeY = 720;
-	config.window.title = "My funny game!";
-	config.rendering.framerateTarget = 60;
-	config.lookup.scenes = "game/scenes";
-	config.defaultScene = "floppygame";
-
 	std::shared_ptr<Logging::Logger> myLogger = std::make_shared<Logging::Logger>();
 #if _DEBUG == 1 || defined(DEBUG)
 	myLogger->AddOutputHandle(Logging::LogLevel::Debug3, stdout, true);
@@ -42,8 +34,7 @@ void runEngine()
 #endif
 
 		// Initialize engine
-	engine = new Engine::Engine(myLogger, config);
-	engine->Init();
+	engine = new Engine::Engine(myLogger);
 
 	try
 	{
@@ -56,6 +47,7 @@ void runEngine()
 		throw e;
 	}
 	
+	engine->Init();
 	engine->Run();
 
 	delete engine;

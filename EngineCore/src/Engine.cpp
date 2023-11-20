@@ -99,21 +99,21 @@ namespace Engine
 		}
 		catch(std::exception& e)
 		{
-			this->logger->SimpleLog(Logging::LogLevel::Exception, "Error parsing config json '%s', what: %s", this->config_path.c_str(), e.what());
+			this->logger->SimpleLog(Logging::LogLevel::Exception, "Error parsing config json '%s', e.what(): %s", this->config_path.c_str(), e.what());
 			exit(1);
 		}
 
 		EventHandling::EventType eventType = EventHandling::EventType::EVENT_UNDEFINED;
 
-		this->scene_manager->LoadScene(this->config.defaultScene);
-		this->scene_manager->SetScene(this->config.defaultScene);
+		this->config.window.title = data["window"]["title"];
+		this->config.window.sizeX = data["window"]["sizeX"];
+		this->config.window.sizeY = data["window"]["sizeY"];
 
-		std::string setting;
-		setting = "window.title";
-		this->windowTitle = data[setting];
+		this->config.rendering.framerateTarget = data["rendering"]["framerateTarget"];
+	
+		this->config.lookup.scenes = data["lookup"]["scenes"];
 
-		setting = "window.size";
-		this->windowX = data[setting]["x"]; this->windowY = data[setting]["y"];
+		this->config.defaultScene = data["defaultScene"];
 	}
 
 	void Engine::ErrorCallback(int code, const char* message)
@@ -207,7 +207,7 @@ namespace Engine
 		object->Translate(glm::vec3(0, 0, 0));
 		object->Scale(glm::vec3(1, 1, 1));
 		object->Rotate(glm::vec3(0, 0, 0));
-		object->ScreenSizeInform(this->windowX, this->windowY);
+		object->ScreenSizeInform(this->config.window.sizeX, this->config.window.sizeY);
 		((Rendering::AxisRenderer*)object->renderer)->UpdateMesh();
 		((Rendering::AxisRenderer*)object->renderer)->scene_manager = this->scene_manager;
 		this->scene_manager->AddObject("_axis", object);
@@ -287,9 +287,8 @@ namespace Engine
 		return this->lastDeltaTime;
 	}
 
-	Engine::Engine(std::shared_ptr<Logging::Logger> logger, EngineConfig& config) noexcept : logger(logger)
+	Engine::Engine(std::shared_ptr<Logging::Logger> logger) noexcept : logger(logger)
 	{
-		this->config = config;
 	}
 
 	Engine::~Engine() noexcept
@@ -334,6 +333,16 @@ namespace Engine
 		);
 #endif
 
+		try
+		{
+			this->HandleConfig();
+		}
+		catch(std::exception e)
+		{
+			this->logger->SimpleLog(Logging::LogLevel::Exception, "Failed handling config! e.what(): %s", e.what());
+			exit(1);
+		}
+
 		this->script_executor = new Scripting::LuaScriptExecutor();
 		this->script_executor->UpdateHeldLogger(this->logger);
 
@@ -359,15 +368,8 @@ namespace Engine
 		this->rendering_engine->init(this->config.window.sizeX, this->config.window.sizeY, this->config.window.title);
 		this->rendering_engine->SetRenderCallback(this->RenderCallback);
 
-		try
-		{
-			this->HandleConfig();
-		}
-		catch(std::exception e)
-		{
-			this->logger->SimpleLog(Logging::LogLevel::Exception, "Failed handling config! e.what(): %s", e.what());
-			exit(1);
-		}
+		this->scene_manager->LoadScene(this->config.defaultScene);
+		this->scene_manager->SetScene(this->config.defaultScene);
 
 		Rendering::GLFWwindowData windowdata = this->rendering_engine->GetWindow();
 		glfwSetWindowFocusCallback(windowdata.window, Engine::OnWindowFocusCallback);

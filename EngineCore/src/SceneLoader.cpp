@@ -89,6 +89,7 @@ namespace Engine
 			Object* object = new Object();
 
 			Rendering::GLFWwindowData window_data = this->owner_engine->GetRenderingEngine()->GetWindow();
+
 			if(template_entry["renderer"]["type"] == std::string("sprite"))
 			{
 				object->renderer = new Rendering::SpriteRenderer(this->owner_engine);
@@ -96,6 +97,7 @@ namespace Engine
 				((Rendering::SpriteRenderer*)object->renderer)->scene_manager = this->owner_engine->GetSceneManager();
 				object->renderer_type = "sprite";
 			}
+			
 			this->logger->SimpleLog(Logging::LogLevel::Debug2, "Loaded templated object %s", std::string(template_entry["name"]).c_str());
 			scene->LoadTemplatedObject(template_entry["name"], object);
 		}

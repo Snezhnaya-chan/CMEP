@@ -60,8 +60,6 @@ namespace Engine
 		std::string config_path = "";
 
 		// Window
-		unsigned int windowX = 0, windowY = 0;
-		std::string windowTitle;
 		unsigned int framerateTarget = 30;
 
 		double lastDeltaTime = 0.0;
@@ -96,7 +94,7 @@ namespace Engine
 	public:
 		std::shared_ptr<SceneManager> scene_manager{};
 		
-		Engine(std::shared_ptr<Logging::Logger> logger, EngineConfig& config) noexcept;
+		Engine(std::shared_ptr<Logging::Logger> logger) noexcept;
 		~Engine() noexcept;
 
 		void SetFramerateTarget(unsigned framerate) noexcept;

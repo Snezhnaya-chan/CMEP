@@ -1,4 +1,14 @@
 {
-    "window.title": "rungame.exe running game/config.json",
-    "window.size": { "x": 1100, "y": 720 }
+    "window": {
+        "title": "Floppybirb",
+        "sizeX": 1100,
+        "sizeY": 720 
+    },
+    "rendering": {
+        "framerateTarget": 60
+    },
+    "lookup": {
+        "scenes": "game/scenes"
+    },
+    "defaultScene": "floppygame"
 }

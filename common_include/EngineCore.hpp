@@ -815,8 +815,6 @@ namespace Engine
 		std::string config_path = "";
 
 		// Window
-		unsigned int windowX = 0, windowY = 0;
-		std::string windowTitle;
 		unsigned int framerateTarget = 30;
 
 		double lastDeltaTime = 0.0;
@@ -830,8 +828,7 @@ namespace Engine
         std::shared_ptr<Logging::Logger> logger{};
 
 		// Event handler storage
-		std::vector<std::pair<EventHandling::EventType, std::function<int(EventHandling::Event&)>>> event_handlers;
-		std::vector<std::tuple<EventHandling::EventType, std::shared_ptr<Scripting::LuaScript>, std::string>> lua_event_handlers;
+		std::multimap<EventHandling::EventType, std::function<int(EventHandling::Event&)>> event_handlers;
 		
 		static void spinSleep(double seconds);
 
@@ -852,7 +849,7 @@ namespace Engine
 	public:
 		std::shared_ptr<SceneManager> scene_manager{};
 		
-		Engine(std::shared_ptr<Logging::Logger> logger, EngineConfig& config) noexcept;
+		Engine(std::shared_ptr<Logging::Logger> logger) noexcept;
 		~Engine() noexcept;
 
 		void SetFramerateTarget(unsigned framerate) noexcept;
@@ -862,15 +859,16 @@ namespace Engine
 
 		void ConfigFile(std::string path);
 		void RegisterEventHandler(EventHandling::EventType event_type, std::function<int(EventHandling::Event&)> function);
-		void RegisterLuaEventHandler(EventHandling::EventType event_type, std::shared_ptr<Scripting::LuaScript> script, std::string function);
 		
+		void Stop();
+
 		int FireEvent(EventHandling::Event& event);
 
 		double GetLastDeltaTime();
 
-		inline AssetManager* GetAssetManager() noexcept;
-		inline Rendering::VulkanRenderingEngine* GetRenderingEngine() noexcept;
-		inline std::weak_ptr<SceneManager> GetSceneManager() noexcept;
+		inline AssetManager* GetAssetManager() noexcept { return this->asset_manager; }
+		inline Rendering::VulkanRenderingEngine* GetRenderingEngine() noexcept { return this->rendering_engine; }
+		inline std::weak_ptr<SceneManager> GetSceneManager() noexcept { return std::weak_ptr<SceneManager>(this->scene_manager); }
 	};
 
 #pragma endregion
