@@ -32,9 +32,9 @@ namespace Engine::Rendering
 
 		VulkanPipeline* pipeline = nullptr;
 		//std::unique_ptr<Rendering::Shader> program;
+	public:
 		std::shared_ptr<const Rendering::Texture> texture;
 
-	public:
 		SpriteRenderer(Engine* engine);
 		~SpriteRenderer();
 

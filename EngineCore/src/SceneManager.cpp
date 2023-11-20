@@ -72,6 +72,11 @@ namespace Engine
 	{
 		return this->scenes.at(this->current_scene)->RemoveObject(name);
 	}
+	
+	Object* SceneManager::AddTemplatedObject(std::string name, std::string template_name)
+	{
+		return this->scenes.at(this->current_scene)->AddTemplatedObject(name, template_name);
+	}
 
 	glm::vec3 SceneManager::GetLightTransform()
 	{

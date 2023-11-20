@@ -136,7 +136,7 @@ namespace Engine::Scripting::Mappings
 			}
 			else
 			{
-				return 1;
+				return 0;
 			}
 
 			return 0;
@@ -203,6 +203,46 @@ namespace Engine::Scripting::Mappings
 			}
 
 			return 0;
+		}
+
+		int sm_AddTemplatedObject(lua_State* state)
+		{
+			lua_getfield(state, 1, "_smart_pointer");
+			std::weak_ptr<SceneManager> scene_manager = *(std::weak_ptr<SceneManager>*)lua_touserdata(state, -1);
+
+			std::string name = lua_tostring(state, 2);
+			
+			std::string template_name = lua_tostring(state, 3);
+
+			if(auto locked_scene_manager = scene_manager.lock())
+			{
+				Object* object = locked_scene_manager->AddTemplatedObject(std::move(name), std::move(template_name));
+
+				if(object != nullptr)
+				{
+					// Generate object table
+					lua_newtable(state);
+
+					Object** ptr_obj = (Object**)lua_newuserdata(state, sizeof(Object*));
+					(*ptr_obj) = object;
+					lua_setfield(state, -2, "_pointer");
+
+					// Generate renderer table
+					lua_newtable(state);
+					Rendering::IRenderer** ptr_renderer = (Rendering::IRenderer**)lua_newuserdata(state, sizeof(Rendering::IRenderer*));
+					(*ptr_renderer) = object->renderer;
+					lua_setfield(state, -2, "_pointer");
+					lua_setfield(state, -2, "renderer");
+
+					return 1;
+				}
+
+				return 0;
+			}
+			else
+			{
+				return 0;
+			}
 		}
 #pragma endregion
 
@@ -358,6 +398,36 @@ namespace Engine::Scripting::Mappings
 			rotation.z = static_cast<float>(lua_tonumber(state, 4));
 
 			ptr_obj->Rotate(rotation);
+
+			return 0;
+		}
+
+		int object_GetSize(lua_State* state)
+		{
+			lua_getfield(state, 1, "_pointer");
+			Object* ptr_obj = *(Object**)lua_touserdata(state, -1);
+
+			glm::vec3 size = ptr_obj->size();
+
+			lua_pushnumber(state, size.x);
+			lua_pushnumber(state, size.y);
+			lua_pushnumber(state, size.z);
+
+			return 3;
+		}
+
+		int object_Scale(lua_State* state)
+		{
+			lua_getfield(state, 1, "_pointer");
+
+			Object* ptr_obj = *(Object**)lua_touserdata(state, -1);
+
+			glm::vec3 size = glm::vec3(0);
+			size.x = static_cast<float>(lua_tonumber(state, 2));
+			size.y = static_cast<float>(lua_tonumber(state, 3));
+			size.z = static_cast<float>(lua_tonumber(state, 4));
+
+			ptr_obj->Scale(size);
 
 			return 0;
 		}
@@ -636,6 +706,7 @@ namespace Engine::Scripting::Mappings
 		CMEP_LUAMAPPING_DEFINE(sm_AddObject),
 		CMEP_LUAMAPPING_DEFINE(sm_FindObject),
 		CMEP_LUAMAPPING_DEFINE(sm_RemoveObject),
+		CMEP_LUAMAPPING_DEFINE(sm_AddTemplatedObject),
 
 		CMEP_LUAMAPPING_DEFINE(engine_GetAssetManager),
 		CMEP_LUAMAPPING_DEFINE(engine_SetFramerateTarget),
@@ -647,6 +718,8 @@ namespace Engine::Scripting::Mappings
 		CMEP_LUAMAPPING_DEFINE(meshRenderer_UpdateTexture),
 
 		CMEP_LUAMAPPING_DEFINE(object_AddChild),
+		CMEP_LUAMAPPING_DEFINE(object_GetSize),
+		CMEP_LUAMAPPING_DEFINE(object_Scale),
 		CMEP_LUAMAPPING_DEFINE(object_GetRotation),
 		CMEP_LUAMAPPING_DEFINE(object_Rotate),
 		CMEP_LUAMAPPING_DEFINE(object_GetPosition),

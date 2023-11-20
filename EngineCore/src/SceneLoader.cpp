@@ -94,6 +94,7 @@ namespace Engine
 				object->renderer = new Rendering::SpriteRenderer(this->owner_engine);
 				((Rendering::SpriteRenderer*)object->renderer)->UpdateTexture(asset_manager->GetTexture(template_entry["renderer"]["sprite"]));
 				((Rendering::SpriteRenderer*)object->renderer)->scene_manager = this->owner_engine->GetSceneManager();
+				object->renderer_type = "sprite";
 			}
 			this->logger->SimpleLog(Logging::LogLevel::Debug2, "Loaded templated object %s", std::string(template_entry["name"]).c_str());
 			scene->LoadTemplatedObject(template_entry["name"], object);

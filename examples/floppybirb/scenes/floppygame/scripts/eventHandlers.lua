@@ -80,11 +80,15 @@ onUpdate = function(event)
 	if gameIsGameOver == false then
 		if spawnPipeSinceLast > spawnPipeEvery then
 			-- Spawn new pipes
-			local object1 = cmepapi.objectFactory_CreateSpriteObject(scene_manager, 1.0, offset / 720, 80 / 1100, 400 / 720, asset_manager, "textures/pipe_down.png");
-			cmepapi.sm_AddObject(scene_manager, "sprite_pipe_down"..tostring(spawnPipeLastIdx + 1), object1);
+			--local object1 = cmepapi.objectFactory_CreateSpriteObject(scene_manager, 1.0, offset / 720, 80 / 1100, 400 / 720, asset_manager, "textures/pipe_down.png");
+			local object1 = cmepapi.sm_AddTemplatedObject(scene_manager, "sprite_pipe_down"..tostring(spawnPipeLastIdx + 1), "pipe_down");
+			cmepapi.object_Translate(object1, 1.0, offset / 720, 0.0);
+			cmepapi.object_Scale(object1, 80 / 1100, 400 / 720, 1.0);
 
-			local object2 = cmepapi.objectFactory_CreateSpriteObject(scene_manager, 1.0, (400 + 200 + offset) / 720, 80 / 1100, 400 / 720, asset_manager, "textures/pipe_up.png");
-			cmepapi.sm_AddObject(scene_manager, "sprite_pipe_up"..tostring(spawnPipeLastIdx + 1), object2);
+			--local object2 = cmepapi.objectFactory_CreateSpriteObject(scene_manager, 1.0, (400 + 200 + offset) / 720, 80 / 1100, 400 / 720, asset_manager, "textures/pipe_up.png");
+			local object2 = cmepapi.sm_AddTemplatedObject(scene_manager, "sprite_pipe_up"..tostring(spawnPipeLastIdx + 1), "pipe_up");
+			cmepapi.object_Translate(object2, 1.0, (400 + 200 + offset) / 720, 0.0);
+			cmepapi.object_Scale(object2, 80 / 1100, 400 / 720, 1.0);
 
 			spawnPipeLastIdx = spawnPipeLastIdx + 1;
 			spawnPipeCount = spawnPipeCount + 1;
@@ -179,8 +183,9 @@ onInit = function(event)
 	cmepapi.sm_AddObject(scene_manager, "text_score", object);
 
 	-- Add birb
-	local birb = cmepapi.objectFactory_CreateSpriteObject(scene_manager, 0.2, (720 / 2) / 720, 48 / 1100, 33 / 720, asset_manager, "textures/birb.png");
-	cmepapi.sm_AddObject(scene_manager, "birb", birb);
+	local birb = cmepapi.sm_AddTemplatedObject(scene_manager, "birb", "birb");
+	cmepapi.object_Translate(birb, 0.2, (720 / 2) / 720, 0.0);
+	cmepapi.object_Scale(birb, 48 / 1100, 33 / 720, 1.0);
 
 	-- Set-up camera
 	cmepapi.sm_SetCameraTransform(scene_manager, -5.0, 2.0, 0.0);

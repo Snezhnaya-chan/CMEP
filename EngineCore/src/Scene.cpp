@@ -1,5 +1,6 @@
 #include "Scene.hpp"
 #include "Engine.hpp"
+#include "Rendering/SpriteRenderer.hpp"
 
 namespace Engine
 {
@@ -30,8 +31,19 @@ namespace Engine
 
 		if(templated_object != this->templates.end())
 		{
-			this->AddObject(name, templated_object->second);
-			return templated_object->second;
+			Object* object = new Object();
+
+			if(templated_object->second->renderer_type == "sprite")
+			{
+				object->renderer = new Rendering::SpriteRenderer(this->owner_engine);
+				//*(Rendering::SpriteRenderer*)object->renderer = *(Rendering::SpriteRenderer*)templated_object->second->renderer;
+				((Rendering::SpriteRenderer*)object->renderer)->texture = ((Rendering::SpriteRenderer*)templated_object->second->renderer)->texture;
+				object->UpdateHeldLogger(this->logger);
+				object->renderer->UpdateHeldLogger(this->logger);
+			}
+
+			this->AddObject(name, object);
+			return object;
 		}
 		return nullptr;
 	}

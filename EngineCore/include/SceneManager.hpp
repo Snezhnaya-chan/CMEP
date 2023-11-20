@@ -48,6 +48,7 @@ namespace Engine
 		void AddObject(std::string name, Object* ptr);
 		Object* FindObject(std::string name);
 		size_t RemoveObject(std::string name) noexcept;
+		Object* AddTemplatedObject(std::string name, std::string template_name);
 
 		glm::vec3 GetLightTransform();
 		void SetLightTransform(glm::vec3 newpos);

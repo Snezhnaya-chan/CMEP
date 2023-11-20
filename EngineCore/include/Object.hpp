@@ -47,6 +47,7 @@ namespace Engine
 
 	public:
 		Rendering::IRenderer* renderer = nullptr;
+		std::string renderer_type = "";
 		
 		Object() noexcept;
 		~Object() noexcept;
