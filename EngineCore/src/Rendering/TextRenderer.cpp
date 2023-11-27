@@ -3,6 +3,9 @@
 #include <array>
 #include <cstring>
 
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "Rendering/TextRenderer.hpp"
 #include "Rendering/Texture.hpp"
 #include "Rendering/Font.hpp"
@@ -146,10 +149,15 @@ namespace Engine::Rendering
 				assert(texture_x > 0 && texture_y > 0);
 
 				// Obscure math I don't understand, achieved with trial and error and works so just leave it like this
-				const float xs = ch->width / (float)this->_screenx * 2 * (float)(std::round(_size.x) / fontsize);
-				const float ys = ch->height / (float)this->_screeny * 2 * (float)(std::round(_size.y) / fontsize);
-				const float x = (float)this->_pos.x * 2 - 1.f + accu_x;
-				const float y = (float)this->_pos.y * 2 - 1.f + accu_y;
+				//const float xs = ch->width / (float)this->_screenx * 2 * (float)(std::round(_size.x) / fontsize);
+				//const float ys = ch->height / (float)this->_screeny * 2 * (float)(std::round(_size.y) / fontsize);
+				//const float x = (float)this->_pos.x * 2 - 1.f + accu_x;
+				//const float y = (float)this->_pos.y * 2 - 1.f + accu_y;
+
+				const float xs = ch->width / (float)this->_screenx * (float)(std::round(_size.x) / fontsize);
+				const float ys = ch->height / (float)this->_screeny * (float)(std::round(_size.y) / fontsize);
+				const float x = accu_x;
+				const float y = accu_y;
 
 				std::array<RenderingVertex, 6> vertices = {};
 				vertices[0] = { glm::vec3(x, ys + y, 0.f),		glm::vec3(1.f, 0.f, 0.f), glm::vec2((ch->x) / (float)texture_x,             (ch->y + ch->height) / (float)texture_y) };
@@ -159,23 +167,36 @@ namespace Engine::Rendering
 				vertices[4] = { glm::vec3(xs + x, y, 0.f),		glm::vec3(1.f, 0.f, 0.f), glm::vec2((ch->x + ch->width) / (float)texture_x, (ch->y) / (float)texture_y) };
 				vertices[5] = { glm::vec3(x, y, 0.f),			glm::vec3(1.f, 0.f, 0.f), glm::vec2((ch->x) / (float)texture_x,             (ch->y) / (float)texture_y) };
 
-				//std::array<GLfloat, 30> data = {
-				//	x, ys + y, 0.f, /**/ (ch->x) / (float)texture_x, (ch->y) / (float)texture_y,
-				//	xs + x, ys + y, 0.f, /**/ (ch->x + ch->width) / (float)texture_x, (ch->y) / (float)texture_y,
-				//	x, y, 0.f, /**/ (ch->x) / (float)texture_x, (ch->y + ch->height) / (float)texture_y,
-
-				//	xs + x, ys + y, 0.f, /**/ (ch->x + ch->width) / (float)texture_x, (ch->y) / (float)texture_y,
-				//	xs + x, y, 0.f, /**/ (ch->x + ch->width) / (float)texture_x, (ch->y + ch->height) / (float)texture_y,
-				//	x, y, 0.f, /**/ (ch->x) / (float)texture_x, (ch->y + ch->height) / (float)texture_y
-				//};
-
-				accu_x += xs + (6.f / this->_screenx);
+				accu_x += xs + (2.f / this->_screenx);
 
 				generated_mesh.insert(generated_mesh.end(), vertices.begin(), vertices.end());
 
 				this->textureImage = texture->GetTextureImage();
 			}
 		}
+
+		glm::mat4 Projection = glm::ortho(0.0f, 1.0f, 0.0f, 1.0f);
+
+		if(this->_parent_size.x == 0.0f && this->_parent_size.y == 0.0f && this->_parent_size.z == 0.0f)
+		{
+			this->_parent_size = glm::vec3(1,1,1);
+		}
+
+		glm::quat ModelRotation = glm::quat(glm::radians(this->_rotation));
+		glm::quat ParentRotation = glm::quat(glm::radians(this->_parent_rotation));
+		glm::mat4 Model = 
+						glm::translate(
+							glm::translate(glm::mat4(1.0f), 
+							this->_parent_pos)
+								*
+							glm::toMat4(
+							ParentRotation),
+						this->_pos)
+							*
+						glm::toMat4(
+						ModelRotation);
+
+		this->matMVP = Projection * Model;
 
 		assert(generated_mesh.size() > 0);
 		//glNamedBufferData(this->vbo, generated_mesh.size() * sizeof(GLfloat), (void*)generated_mesh.data(), GL_STATIC_DRAW);
@@ -230,6 +251,17 @@ namespace Engine::Rendering
 		{
 			this->UpdateMesh();
 		}
+
+		VulkanRenderingEngine* renderer = this->owner_engine->GetRenderingEngine();
+		vkMapMemory(renderer->GetLogicalDevice(),
+			pipeline->uniformBuffers[currentFrame]->allocationInfo.deviceMemory,
+			pipeline->uniformBuffers[currentFrame]->allocationInfo.offset,
+			pipeline->uniformBuffers[currentFrame]->allocationInfo.size,
+			0,
+			&(pipeline->uniformBuffers[currentFrame]->mappedData));
+
+		memcpy(this->pipeline->uniformBuffers[currentFrame]->mappedData, &this->matMVP, sizeof(glm::mat4));
+		vkUnmapMemory(renderer->GetLogicalDevice(), pipeline->uniformBuffers[currentFrame]->allocationInfo.deviceMemory);
 
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, this->pipeline->vkPipelineLayout, 0, 1, &this->pipeline->vkDescriptorSets[currentFrame], 0, nullptr);
 

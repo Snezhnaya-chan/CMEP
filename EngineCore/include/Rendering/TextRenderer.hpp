@@ -27,6 +27,8 @@ namespace Engine::Rendering
 		VulkanTextureImage* textureImage = nullptr;
 
 		Rendering::Font* font;
+		
+		glm::mat4 matMVP{};
 
 	public:
 		TextRenderer(Engine* engine);
